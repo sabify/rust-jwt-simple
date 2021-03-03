@@ -60,8 +60,6 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         .collect(),
     );
 
-    let allowed_audience_string = "p".to_string();
-
     c.bench_function("VerificationOptionsWithSet", |b| {
         b.iter(|| {
             if let Some(allowed_issuers) = &allowed_issuers {
@@ -72,7 +70,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
             if let Some(allowed_audiences) = &allowed_audiences {
                 if let Some(audiences) = &claims.audiences {
                     match audiences {
-                        Audiences::AsString(audience) => audience == &allowed_audience_string,
+                        Audiences::AsString(audience) => allowed_audiences.contains(audience),
                         Audiences::AsSet(audiences) => {
                             audiences.intersection(allowed_audiences).next().is_some()
                         }
