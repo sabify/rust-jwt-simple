@@ -33,7 +33,7 @@ Important: JWT's purpose is to verify that data has been created by a party know
 
 ```toml
 [dependencies]
-jwt-simple = "0.2"
+jwt-simple = "0.9"
 ```
 
 Rust:
@@ -41,6 +41,8 @@ Rust:
 ```rust
 use jwt_simple::prelude::*;
 ```
+
+Errors are returned as `jwt_simple::Error` values (alias for the `Error` type of the `thiserror` crate).
 
 ## Authentication (symmetric, `HS*` JWT algorithms) example
 
@@ -91,12 +93,15 @@ options.accept_future = true;
 options.time_tolerance = Some(Duration::from_mins(15));
 // reject tokens if they were issued more than 1 hour ago
 options.max_validity = Some(Duration::from_hours(1));
-// reject tokens if they don't include an issuer from that list
-options.allowed_issuers = Some(vec!["example app".to_string()]);
+// reject tokens if they don't include an issuer from that set
+options.allowed_issuers = Some(HashSet::from_strings(&["example app"]));
+
 // see the documentation for the full list of available options
 
 let claims = key.verify_token::<NoCustomClaims>(&token, Some(options))?;
 ```
+
+Note that `allowed_issuers` and `allowed_audiences` are not strings, but sets of strings (using the `HashSet` type from the Rust standard library), as the application can allow multiple return values.
 
 ## Signatures (asymmetric, `RS*`, `PS*`, `ES*` and `EdDSA` algorithms) example
 
